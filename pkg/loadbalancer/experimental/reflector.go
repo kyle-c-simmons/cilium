@@ -5,6 +5,7 @@ package experimental
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"net"
@@ -13,6 +14,7 @@ import (
 
 	"github.com/cilium/hive/cell"
 	"github.com/cilium/hive/job"
+	"github.com/cilium/statedb"
 	"github.com/cilium/stream"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/sets"
@@ -27,6 +29,7 @@ import (
 	k8sUtils "github.com/cilium/cilium/pkg/k8s/utils"
 	"github.com/cilium/cilium/pkg/labels"
 	"github.com/cilium/cilium/pkg/loadbalancer"
+	"github.com/cilium/cilium/pkg/logging/logfields"
 	"github.com/cilium/cilium/pkg/source"
 	"github.com/cilium/cilium/pkg/time"
 )
@@ -126,7 +129,8 @@ func runResourceReflector(ctx context.Context, p reflectorParams, initComplete f
 			return
 		}
 		if err := p.Writer.UpsertServiceAndFrontends(txn, svc, fes...); err != nil {
-			panic("BUG: UpsertServiceAndFrontends: " + err.Error())
+			p.Log.Error("BUG: Unexpected failure in UpsertServiceAndFrontends",
+				logfields.Error, err)
 		}
 	}
 
@@ -166,8 +170,9 @@ func runResourceReflector(ctx context.Context, p reflectorParams, initComplete f
 				case resource.Delete:
 					name := loadbalancer.ServiceName{Namespace: obj.Namespace, Name: obj.Name}
 					delete(pendingServices, name)
-					if err := p.Writer.DeleteServiceAndFrontends(txn, name); err != nil {
-						panic("BUG: DeleteServiceAndFrontends: " + err.Error())
+					if err := p.Writer.DeleteServiceAndFrontends(txn, name); err != nil && !errors.Is(err, statedb.ErrObjectNotFound) {
+						p.Log.Error("BUG: unexpected failure in DeleteServiceAndFrontends",
+							logfields.Error, err)
 					}
 				}
 			}
@@ -195,7 +200,8 @@ func runResourceReflector(ctx context.Context, p reflectorParams, initComplete f
 							backends...)
 
 						if err != nil {
-							panic("BUG: UpsertBackends: " + err.Error())
+							p.Log.Error("BUG: Unexpected failure in UpsertBackends",
+								logfields.Error, err)
 						}
 					}
 
@@ -244,12 +250,14 @@ func runResourceReflector(ctx context.Context, p reflectorParams, initComplete f
 					markSync(txn)
 				case resource.Upsert:
 					if err := upsertHostPort(p, txn, obj); err != nil {
-						panic(err)
+						p.Log.Error("BUG: Unexpected failure in upsertHostPort",
+							logfields.Error, err)
 					}
 
 				case resource.Delete:
-					if err := deleteHostPort(p, txn, obj); err != nil {
-						panic(err)
+					if err := deleteHostPort(p, txn, obj); err != nil && !errors.Is(err, statedb.ErrObjectNotFound) {
+						p.Log.Error("BUG: Unexpected failure in deleteHostPort",
+							logfields.Error, err)
 					}
 				}
 			}
@@ -625,7 +633,7 @@ func deleteHostPort(params reflectorParams, wtxn WriteTxn, pod *slim_corev1.Pod)
 		Namespace: pod.ObjectMeta.Namespace,
 	}
 	for svc := range params.Writer.Services().Prefix(wtxn, ServiceByName(serviceNamePrefix)) {
-		// Delete this orphaned servicea and associated frontends. The backends will be removed
+		// Delete this orphaned service and associated frontends. The backends will be removed
 		// when they become unreferenced.
 		err := params.Writer.DeleteServiceAndFrontends(wtxn, svc.Name)
 		if err != nil {
