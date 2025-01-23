@@ -26,7 +26,7 @@ type lrpManagerParams struct {
 	cell.In
 
 	Svc            service.ServiceManager
-	SvcCache       *k8s.ServiceCache
+	SvcCache       k8s.ServiceCache
 	Lpr            agentK8s.LocalPodResource
 	Ep             endpointmanager.EndpointManager
 	MetricsManager LRPMetrics

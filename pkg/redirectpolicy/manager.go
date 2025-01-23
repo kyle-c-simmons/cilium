@@ -101,7 +101,7 @@ type Manager struct {
 	metricsManager LRPMetrics
 }
 
-func NewRedirectPolicyManager(svc svcManager, svcCache *k8s.ServiceCache, lpr agentK8s.LocalPodResource, epM endpointManager, metricsManager LRPMetrics) *Manager {
+func NewRedirectPolicyManager(svc svcManager, svcCache k8s.ServiceCache, lpr agentK8s.LocalPodResource, epM endpointManager, metricsManager LRPMetrics) *Manager {
 	return &Manager{
 		svcManager:            svc,
 		svcCache:              svcCache,
