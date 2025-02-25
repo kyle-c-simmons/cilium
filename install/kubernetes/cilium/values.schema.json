@@ -5598,6 +5598,9 @@
     "tunnelSourcePortRange": {
       "type": "string"
     },
+    "underlayProtocol": {
+      "type": "string"
+    },
     "updateStrategy": {
       "properties": {
         "rollingUpdate": {
