@@ -563,7 +563,7 @@ ct_extract_ports6(struct __ctx_buff *ctx, struct ipv6hdr *ip6, __s64 fraginfo,
 		return ipv6_load_l4_ports(ctx, ip6, fraginfo, off,
 					  dir, &tuple->dport);
 	default:
-		/* Can't handle extension headers yet */
+		/* Unsupported L4 protocol */
 		return DROP_CT_UNKNOWN_PROTO;
 	}
 
@@ -814,7 +814,7 @@ ct_extract_ports4(struct __ctx_buff *ctx, struct iphdr *ip4, __s64 fraginfo,
 		return ipv4_load_l4_ports(ctx, ip4, fraginfo, off,
 					  dir, &tuple->dport);
 	default:
-		/* Can't handle extension headers yet */
+		/* Unsupported L4 protocol */
 		return DROP_CT_UNKNOWN_PROTO;
 	}
 
