@@ -99,7 +99,7 @@ type CiliumNetworkPolicyNodeStatus struct {
 	Error string `json:"error,omitempty"`
 
 	// LastUpdated contains the last time this status was updated
-	LastUpdated slimv1.Time `json:"lastUpdated,omitempty"`
+	LastUpdated slimv1.Time `json:"lastUpdated"`
 
 	// Revision is the policy revision of the repository which first implemented
 	// this policy.
@@ -271,7 +271,7 @@ type NetworkPolicyCondition struct {
 	Status v1.ConditionStatus `json:"status"`
 	// The last time the condition transitioned from one status to another.
 	// +optional
-	LastTransitionTime slimv1.Time `json:"lastTransitionTime,omitempty"`
+	LastTransitionTime slimv1.Time `json:"lastTransitionTime"`
 	// The reason for the condition's last transition.
 	// +optional
 	Reason string `json:"reason,omitempty"`

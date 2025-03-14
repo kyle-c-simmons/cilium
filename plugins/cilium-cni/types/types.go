@@ -24,10 +24,10 @@ type NetConf struct {
 	MTU            int                    `json:"mtu"`
 	Args           Args                   `json:"args"`
 	EnableRouteMTU bool                   `json:"enable-route-mtu"`
-	ENI            eniTypes.ENISpec       `json:"eni,omitempty"`
-	Azure          azureTypes.AzureSpec   `json:"azure,omitempty"`
-	IPAM           IPAM                   `json:"ipam,omitempty"` // Shadows the JSON field "ipam" in cniTypes.NetConf.
-	AlibabaCloud   alibabaCloudTypes.Spec `json:"alibaba-cloud,omitempty"`
+	ENI            eniTypes.ENISpec       `json:"eni"`
+	Azure          azureTypes.AzureSpec   `json:"azure"`
+	IPAM           IPAM                   `json:"ipam"` // Shadows the JSON field "ipam" in cniTypes.NetConf.
+	AlibabaCloud   alibabaCloudTypes.Spec `json:"alibaba-cloud"`
 	EnableDebug    bool                   `json:"enable-debug"`
 	LogFormat      string                 `json:"log-format"`
 	LogFile        string                 `json:"log-file"`

@@ -24,7 +24,7 @@ type CiliumCIDRGroup struct {
 	// +deepequal-gen=false
 	metav1.TypeMeta `json:",inline"`
 	// +deepequal-gen=false
-	metav1.ObjectMeta `json:"metadata,omitempty"`
+	metav1.ObjectMeta `json:"metadata"`
 
 	// +kubebuilder:validation:Required
 	Spec CiliumCIDRGroupSpec `json:"spec"`
@@ -45,6 +45,6 @@ type CiliumCIDRGroupList struct {
 	// +deepequal-gen=false
 	metav1.TypeMeta `json:",inline"`
 	// +deepequal-gen=false
-	metav1.ListMeta `json:"metadata,omitempty"`
+	metav1.ListMeta `json:"metadata"`
 	Items           []CiliumCIDRGroup `json:"items"`
 }

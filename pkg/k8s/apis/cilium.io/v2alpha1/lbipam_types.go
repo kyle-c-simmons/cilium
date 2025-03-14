@@ -33,7 +33,7 @@ type CiliumLoadBalancerIPPool struct {
 	// ip pool.
 	//
 	// +kubebuilder:validation:Required
-	Spec CiliumLoadBalancerIPPoolSpec `json:"spec,omitempty"`
+	Spec CiliumLoadBalancerIPPoolSpec `json:"spec"`
 
 	// Status is the status of the IP Pool.
 	//

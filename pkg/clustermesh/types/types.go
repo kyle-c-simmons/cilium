@@ -96,7 +96,7 @@ func RegisterClusterInfoValidator(lc cell.Lifecycle, cinfo ClusterInfo) {
 type CiliumClusterConfig struct {
 	ID uint32 `json:"id,omitempty"`
 
-	Capabilities CiliumClusterConfigCapabilities `json:"capabilities,omitempty"`
+	Capabilities CiliumClusterConfigCapabilities `json:"capabilities"`
 }
 
 type CiliumClusterConfigCapabilities struct {

@@ -18,7 +18,7 @@ type CiliumPodIPPool struct {
 	// +deepequal-gen=false
 	metav1.TypeMeta `json:",inline"`
 	// +deepequal-gen=false
-	metav1.ObjectMeta `json:"metadata,omitempty"`
+	metav1.ObjectMeta `json:"metadata"`
 
 	// +kubebuilder:validation:Required
 	Spec IPPoolSpec `json:"spec"`
@@ -79,7 +79,7 @@ type PoolCIDR string
 // CiliumPodIPPoolList is a list of CiliumPodIPPool objects.
 type CiliumPodIPPoolList struct {
 	metav1.TypeMeta `json:",inline"`
-	metav1.ListMeta `json:"metadata,omitempty"`
+	metav1.ListMeta `json:"metadata"`
 
 	// Items is a list of CiliumPodIPPools.
 	Items []CiliumPodIPPool `json:"items"`

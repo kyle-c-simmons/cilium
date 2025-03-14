@@ -267,8 +267,7 @@ func TestExporterWithFieldMask(t *testing.T) {
 	exporter, err := newExporter(log, opts)
 	assert.NoError(t, err)
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 
 	for _, ev := range events {
 		err := exporter.Export(ctx, ev)
@@ -459,11 +458,9 @@ func BenchmarkExporter(b *testing.B) {
 	exporter, err := newExporter(log, opts)
 	assert.NoError(b, err)
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := b.Context()
 
-	b.StartTimer()
-	for i := 0; i < b.N; i++ {
+	for i := 0; b.Loop(); i++ {
 		event := &allowEvent
 		if i%10 == 0 { // 10% doesn't match allow filter
 			event = &noAllowEvent

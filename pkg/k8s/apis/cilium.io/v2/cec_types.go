@@ -34,7 +34,7 @@ type CiliumEnvoyConfig struct {
 	metav1.ObjectMeta `json:"metadata"`
 
 	// +k8s:openapi-gen=false
-	Spec CiliumEnvoyConfigSpec `json:"spec,omitempty"`
+	Spec CiliumEnvoyConfigSpec `json:"spec"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

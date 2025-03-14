@@ -98,7 +98,7 @@ func (f *FakeListerWatcher) DeleteFromText(content string) error {
 // (at least as far as Informer/Reflector goes).
 type fakeList struct {
 	v1.TypeMeta `json:",inline"`
-	v1.ListMeta `json:"metadata,omitempty" protobuf:"bytes,1,opt,name=metadata"`
+	v1.ListMeta `json:"metadata" protobuf:"bytes,1,opt,name=metadata"`
 	Items       []runtime.Object `json:"items" protobuf:"bytes,2,rep,name=items"`
 }
 

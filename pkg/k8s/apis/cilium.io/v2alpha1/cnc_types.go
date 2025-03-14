@@ -23,7 +23,7 @@ type CiliumNodeConfig struct {
 	// +deepequal-gen=false
 	metav1.TypeMeta `json:",inline"`
 	// +deepequal-gen=false
-	metav1.ObjectMeta `json:"metadata,omitempty"`
+	metav1.ObjectMeta `json:"metadata"`
 
 	// Spec is the desired Cilium configuration overrides for a given node
 	Spec CiliumNodeConfigSpec `json:"spec"`
@@ -50,6 +50,6 @@ type CiliumNodeConfigList struct {
 	// +deepequal-gen=false
 	metav1.TypeMeta `json:",inline"`
 	// +deepequal-gen=false
-	metav1.ListMeta `json:"metadata,omitempty"`
+	metav1.ListMeta `json:"metadata"`
 	Items           []CiliumNodeConfig `json:"items"`
 }

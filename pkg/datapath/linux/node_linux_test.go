@@ -3475,8 +3475,7 @@ func (s *linuxPrivilegedBaseTestSuite) benchmarkNodeUpdate(b *testing.B, config 
 	oldNode := nodev1
 	newNode := nodev2
 
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		err = linuxNodeHandler.NodeUpdate(oldNode, newNode)
 		require.NoError(b, err)
 
@@ -3548,8 +3547,7 @@ func (s *linuxPrivilegedBaseTestSuite) benchmarkNodeUpdateNOP(b *testing.B, conf
 	err = linuxNodeHandler.NodeAdd(nodev1)
 	require.NoError(b, err)
 
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		err = linuxNodeHandler.NodeUpdate(nodev1, nodev1)
 		require.NoError(b, err)
 	}
@@ -3617,8 +3615,7 @@ func (s *linuxPrivilegedBaseTestSuite) benchmarkNodeValidateImplementation(b *te
 	err = linuxNodeHandler.NodeAdd(nodev1)
 	require.NoError(b, err)
 
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		err = linuxNodeHandler.NodeValidateImplementation(nodev1)
 		require.NoError(b, err)
 	}

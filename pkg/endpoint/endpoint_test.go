@@ -780,8 +780,8 @@ func BenchmarkEndpointGetModel(b *testing.B) {
 	}
 
 	b.ReportAllocs()
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+
+	for b.Loop() {
 		e.GetModel()
 	}
 }
@@ -845,8 +845,7 @@ func TestMetadataResolver(t *testing.T) {
 	for _, restored := range []bool{false, true} {
 		for _, tt := range tests {
 			t.Run(fmt.Sprintf("%s (restored=%t)", tt.name, restored), func(t *testing.T) {
-				ctx, cancel := context.WithCancel(context.Background())
-				defer cancel()
+				ctx := t.Context()
 
 				ep := NewTestEndpointWithState(s, nil, s, testipcache.NewMockIPCache(), &FakeEndpointProxy{},
 					testidentity.NewMockIdentityAllocator(nil), ctmap.NewFakeGCRunner(), 123, StateWaitingForIdentity)

@@ -120,7 +120,7 @@ type Status struct {
 
 	// PodsCount is the number of pods in the k8s cluster
 	// all pods, and pods managed by cilium
-	PodsCount PodsCount `json:"pods_count,omitempty"`
+	PodsCount PodsCount `json:"pods_count"`
 
 	CiliumStatus CiliumStatusMap `json:"cilium_status,omitempty"`
 

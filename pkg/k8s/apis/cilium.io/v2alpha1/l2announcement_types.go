@@ -32,7 +32,7 @@ type CiliumL2AnnouncementPolicy struct {
 	// Spec is a human readable description of a L2 announcement policy
 	//
 	// +kubebuilder:validation:Optional
-	Spec CiliumL2AnnouncementPolicySpec `json:"spec,omitempty"`
+	Spec CiliumL2AnnouncementPolicySpec `json:"spec"`
 
 	// Status is the status of the policy.
 	//

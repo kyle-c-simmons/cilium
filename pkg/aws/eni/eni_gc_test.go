@@ -68,8 +68,7 @@ func TestStartENIGarbageCollector(t *testing.T) {
 		createTaggedENI()
 	}
 
-	ctx, cancel := context.WithCancel(context.TODO())
-	defer cancel()
+	ctx := t.Context()
 	StartENIGarbageCollector(ctx, hivetest.Logger(t), ec2api, GarbageCollectionParams{
 		RunInterval:    0, // for testing, we're triggering the controller manually
 		MaxPerInterval: 4,

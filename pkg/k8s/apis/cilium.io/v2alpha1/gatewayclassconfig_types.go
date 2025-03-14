@@ -30,7 +30,7 @@ type CiliumGatewayClassConfig struct {
 	// Spec is a human-readable of a GatewayClass configuration.
 	//
 	// +kubebuilder:validation:Optional
-	Spec CiliumGatewayClassConfigSpec `json:"spec,omitempty"`
+	Spec CiliumGatewayClassConfigSpec `json:"spec"`
 
 	// Status is the status of the policy.
 	//

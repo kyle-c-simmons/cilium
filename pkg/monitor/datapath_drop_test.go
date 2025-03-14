@@ -66,9 +66,8 @@ func BenchmarkNewDecodeDropNotify(b *testing.B) {
 	}
 
 	b.ReportAllocs()
-	b.ResetTimer()
 
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		dn := &DropNotify{}
 		if err := DecodeDropNotify(buf.Bytes(), dn); err != nil {
 			b.Fatal(err)
@@ -85,9 +84,8 @@ func BenchmarkOldDecodeDropNotify(b *testing.B) {
 	}
 
 	b.ReportAllocs()
-	b.ResetTimer()
 
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		dn := &DropNotify{}
 		if err := binary.Read(bytes.NewReader(buf.Bytes()), byteorder.Native, dn); err != nil {
 			b.Fatal(err)

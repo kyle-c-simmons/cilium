@@ -25,8 +25,7 @@ func TestReloadNotificationReceived(t *testing.T) {
 		configReceived = true
 	})
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 
 	go watcher.watch(ctx, 1*time.Millisecond)
 

@@ -548,7 +548,7 @@ type Status struct {
 	KVStoreMesh       struct {
 		Enabled bool                `json:"enabled"`
 		Status  *ConnectivityStatus `json:"status,omitempty"`
-	} `json:"kvstoremesh,omitempty"`
+	} `json:"kvstoremesh"`
 }
 
 func (k *K8sClusterMesh) statusAccessInformation(ctx context.Context, log bool) (*accessInformation, error) {
@@ -623,8 +623,8 @@ type ClusterStats struct {
 }
 
 type ConnectivityStatus struct {
-	GlobalServices StatisticalStatus        `json:"global_services,omitempty"`
-	Connected      StatisticalStatus        `json:"connected,omitempty"`
+	GlobalServices StatisticalStatus        `json:"global_services"`
+	Connected      StatisticalStatus        `json:"connected"`
 	Clusters       map[string]*ClusterStats `json:"clusters,omitempty"`
 	Total          int64                    `json:"total,omitempty"`
 	NotReady       int64                    `json:"not_ready,omitempty"`

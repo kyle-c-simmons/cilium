@@ -387,8 +387,7 @@ func TestRedirectWithDeny(t *testing.T) {
 		ruleL4L7Allow.WithEndpointSelector(selectBar_),
 	})
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 	cmp := completion.NewWaitGroup(ctx)
 	s.computePolicyForTest(t, ep, cmp)
 
@@ -519,8 +518,7 @@ func TestRedirectWithPriority(t *testing.T) {
 		ruleL4L7AllowListener2Priority1.WithEndpointSelector(selectBar_),
 	})
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 	cmp := completion.NewWaitGroup(ctx)
 	s.computePolicyForTest(t, ep, cmp)
 
@@ -574,8 +572,7 @@ func TestRedirectWithEqualPriority(t *testing.T) {
 		ruleL4L7AllowListener2Priority1.WithEndpointSelector(selectBar_),
 	})
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 	cmp := completion.NewWaitGroup(ctx)
 	s.computePolicyForTest(t, ep, cmp)
 

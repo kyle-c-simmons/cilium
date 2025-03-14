@@ -24,7 +24,7 @@ type CiliumEgressGatewayPolicy struct {
 	// +deepequal-gen=false
 	metav1.ObjectMeta `json:"metadata"`
 
-	Spec CiliumEgressGatewayPolicySpec `json:"spec,omitempty"`
+	Spec CiliumEgressGatewayPolicySpec `json:"spec"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

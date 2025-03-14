@@ -576,8 +576,7 @@ func TestRestoreServices(t *testing.T) {
 	option.Config.NodePortAlg = option.NodePortAlgMaglev
 	lbmap := m.svc.lbmap.(*mockmaps.LBMockMap)
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 
 	m.newServiceMock(ctx, lbmap)
 
@@ -657,8 +656,7 @@ func TestSyncWithK8sFinished(t *testing.T) {
 	// Restart service, but keep the lbmap to restore services from
 	lbmap := m.svc.lbmap.(*mockmaps.LBMockMap)
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 
 	m.newServiceMock(ctx, lbmap)
 
@@ -1510,8 +1508,7 @@ func TestRestoreServiceWithTerminatingBackends(t *testing.T) {
 	// Simulate agent restart.
 	lbmap := m.svc.lbmap.(*mockmaps.LBMockMap)
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 
 	m.newServiceMock(ctx, lbmap)
 
@@ -1980,8 +1977,7 @@ func TestRestoreServiceWithBackendStates(t *testing.T) {
 	// Simulate agent restart.
 	lbmap := m.svc.lbmap.(*mockmaps.LBMockMap)
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 
 	m.newServiceMock(ctx, lbmap)
 
@@ -2484,7 +2480,7 @@ func (f *FakeMonitorAgent) RemoveConsumer(mc consumer.MonitorConsumer) {
 func (f *FakeMonitorAgent) RemoveListener(ml listener.MonitorListener) {
 }
 
-func (f *FakeMonitorAgent) SendEvent(typ int, event interface{}) error {
+func (f *FakeMonitorAgent) SendEvent(typ int, event any) error {
 	return nil
 }
 
@@ -2554,8 +2550,7 @@ func TestHealthCheckInitialSync(t *testing.T) {
 	// Upsert the service before subscription
 	m.svc.UpsertService(p1)
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 
 	m.svc.Subscribe(ctx, func(svcInfo HealthUpdateSvcInfo) {
 		receivedServices = append(receivedServices, svcInfo.Name)

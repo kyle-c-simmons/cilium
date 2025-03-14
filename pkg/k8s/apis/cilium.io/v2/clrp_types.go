@@ -32,7 +32,7 @@ type CiliumLocalRedirectPolicy struct {
 	metav1.ObjectMeta `json:"metadata"`
 
 	// Spec is the desired behavior of the local redirect policy.
-	Spec CiliumLocalRedirectPolicySpec `json:"spec,omitempty"`
+	Spec CiliumLocalRedirectPolicySpec `json:"spec"`
 
 	// Status is the most recent status of the local redirect policy.
 	// It is a read-only field.

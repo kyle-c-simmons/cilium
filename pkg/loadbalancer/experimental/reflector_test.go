@@ -33,8 +33,7 @@ func BenchmarkConvertService(b *testing.B) {
 	}
 	svc := obj.(*slim_corev1.Service)
 
-	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		convertService(benchmarkExternalConfig, svc)
 	}
 	b.ReportMetric(float64(b.N)/b.Elapsed().Seconds(), "services/sec")
@@ -47,8 +46,7 @@ func BenchmarkParseEndpointSlice(b *testing.B) {
 	}
 	epSlice := obj.(*slim_discovery_v1.EndpointSlice)
 
-	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		k8s.ParseEndpointSliceV1(epSlice)
 	}
 	b.ReportMetric(float64(b.N)/b.Elapsed().Seconds(), "endpointslices/sec")
@@ -62,8 +60,7 @@ func BenchmarkConvertEndpoints(b *testing.B) {
 	epSlice := obj.(*slim_discovery_v1.EndpointSlice)
 	eps := k8s.ParseEndpointSliceV1(epSlice)
 
-	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		convertEndpoints(benchmarkExternalConfig, eps)
 	}
 	b.ReportMetric(float64(b.N)/b.Elapsed().Seconds(), "endpoints/sec")

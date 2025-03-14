@@ -96,7 +96,7 @@ type IPAMPoolRequest struct {
 	// requested number of IPs here.
 	//
 	// +optional
-	Needed IPAMPoolDemand `json:"needed,omitempty"`
+	Needed IPAMPoolDemand `json:"needed"`
 }
 
 type IPAMPoolSpec struct {
@@ -136,7 +136,7 @@ type IPAMSpec struct {
 	// Pools contains the list of assigned IPAM pools for this node.
 	//
 	// +optional
-	Pools IPAMPoolSpec `json:"pools,omitempty"`
+	Pools IPAMPoolSpec `json:"pools"`
 
 	// PodCIDRs is the list of CIDRs available to the node for allocation.
 	// When an IP is used, the IP will be added to Status.IPAM.Used
@@ -216,7 +216,7 @@ type IPAMStatus struct {
 	// Operator is the Operator status of the node
 	//
 	// +optional
-	OperatorStatus OperatorStatus `json:"operator-status,omitempty"`
+	OperatorStatus OperatorStatus `json:"operator-status"`
 
 	// ReleaseIPs tracks the state for every IPv4 address considered for release.
 	// The value can be one of the following strings:

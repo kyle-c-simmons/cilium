@@ -64,14 +64,14 @@ type Rule struct {
 	// are mutually exclusive.
 	//
 	// +kubebuilder:validation:OneOf
-	EndpointSelector EndpointSelector `json:"endpointSelector,omitempty"`
+	EndpointSelector EndpointSelector `json:"endpointSelector"`
 
 	// NodeSelector selects all nodes which should be subject to this rule.
 	// EndpointSelector and NodeSelector cannot be both empty and are mutually
 	// exclusive. Can only be used in CiliumClusterwideNetworkPolicies.
 	//
 	// +kubebuilder:validation:OneOf
-	NodeSelector EndpointSelector `json:"nodeSelector,omitempty"`
+	NodeSelector EndpointSelector `json:"nodeSelector"`
 
 	// Ingress is a list of IngressRule which are enforced at ingress.
 	// If omitted or empty, this rule does not apply at ingress.
@@ -126,7 +126,7 @@ type Rule struct {
 	// cause endpoints to enter default-deny mode.
 	//
 	// +kubebuilder:validation:Optional
-	EnableDefaultDeny DefaultDenyConfig `json:"enableDefaultDeny,omitempty"`
+	EnableDefaultDeny DefaultDenyConfig `json:"enableDefaultDeny"`
 
 	// Description is a free form string, it can be used by the creator of
 	// the rule to store human readable explanation of the purpose of this
@@ -149,7 +149,7 @@ func (r *Rule) MarshalJSON() ([]byte, error) {
 		Description       string            `json:"description,omitempty"`
 	}
 
-	var a interface{}
+	var a any
 	ruleCommon := common{
 		Ingress:           r.Ingress,
 		IngressDeny:       r.IngressDeny,
@@ -164,7 +164,7 @@ func (r *Rule) MarshalJSON() ([]byte, error) {
 	switch {
 	case r.EndpointSelector.LabelSelector != nil:
 		a = struct {
-			EndpointSelector EndpointSelector `json:"endpointSelector,omitempty"`
+			EndpointSelector EndpointSelector `json:"endpointSelector"`
 			common
 		}{
 			EndpointSelector: r.EndpointSelector,
@@ -172,7 +172,7 @@ func (r *Rule) MarshalJSON() ([]byte, error) {
 		}
 	case r.NodeSelector.LabelSelector != nil:
 		a = struct {
-			NodeSelector EndpointSelector `json:"nodeSelector,omitempty"`
+			NodeSelector EndpointSelector `json:"nodeSelector"`
 			common
 		}{
 			NodeSelector: r.NodeSelector,

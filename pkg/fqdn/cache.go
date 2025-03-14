@@ -36,11 +36,11 @@ type cacheEntry struct {
 	Name string `json:"fqdn,omitempty"`
 
 	// LookupTime is when the data begins being valid
-	LookupTime time.Time `json:"lookup-time,omitempty"`
+	LookupTime time.Time `json:"lookup-time"`
 
 	// ExpirationTime is a calculated time when the DNS data stops being valid.
 	// It is simply LookupTime + TTL
-	ExpirationTime time.Time `json:"expiration-time,omitempty"`
+	ExpirationTime time.Time `json:"expiration-time"`
 
 	// TTL represents the number of seconds past LookupTime that this data is
 	// valid.
@@ -765,7 +765,7 @@ type DNSZombieMapping struct {
 
 	// IP is an address that is pending for delete but may be in-use by a
 	// connection.
-	IP netip.Addr `json:"ip,omitempty"`
+	IP netip.Addr `json:"ip"`
 
 	// AliveAt is the last time this IP was marked alive via
 	// DNSZombieMappings.MarkAlive. At zombie creation time we assume a zombie
@@ -775,14 +775,14 @@ type DNSZombieMapping struct {
 	//
 	// When AliveAt is later than DNSZombieMappings.lastCTGCUpdate the zombie is
 	// considered alive.
-	AliveAt time.Time `json:"alive-at,omitempty"`
+	AliveAt time.Time `json:"alive-at"`
 
 	// DeletePendingAt is the time at which this IP was most-recently scheduled
 	// for deletion. This can be updated if an IP expires from the DNS caches
 	// multiple times.
 	// When DNSZombieMappings.lastCTGCUpdate is earlier than DeletePendingAt a
 	// zombie is alive.
-	DeletePendingAt time.Time `json:"delete-pending-at,omitempty"`
+	DeletePendingAt time.Time `json:"delete-pending-at"`
 
 	// revisionAddedAt is the GCRevision at which this entry was added.
 	// garbage collection must run 2 times before the zombie is eligible for deletion

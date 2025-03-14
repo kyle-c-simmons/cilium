@@ -59,7 +59,7 @@ type CiliumBGPPeeringPolicy struct {
 	// Spec is a human readable description of a BGP peering policy
 	//
 	// +kubebuilder:validation:Optional
-	Spec CiliumBGPPeeringPolicySpec `json:"spec,omitempty"`
+	Spec CiliumBGPPeeringPolicySpec `json:"spec"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
