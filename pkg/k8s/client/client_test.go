@@ -281,7 +281,7 @@ func Test_clientMultipleAPIServers(t *testing.T) {
 	K8sAPIServerFilePath = apiStateFile.Name()
 
 	servers := make([]*httptest.Server, 3)
-	for i := 0; i < 3; i++ {
+	for i := range 3 {
 		servers[i] = httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			requests.Store(r.URL.Path, r)
 
@@ -362,7 +362,7 @@ func Test_clientMultipleAPIServersServiceSwitchover(t *testing.T) {
 	K8sAPIServerFilePath = apiStateFile.Name()
 
 	servers := make([]*httptest.Server, 3)
-	for i := 0; i < len(servers); i++ {
+	for i := range servers {
 		servers[i] = httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			requests.Store(r.URL.Path, r)
 
@@ -474,7 +474,7 @@ func Test_clientMultipleAPIServersFailedRestore(t *testing.T) {
 	K8sAPIServerFilePath = apiStateFile.Name()
 
 	servers := make([]*httptest.Server, 4)
-	for i := 0; i < len(servers); i++ {
+	for i := range servers {
 		servers[i] = httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			requests.Store(r.URL.Path, r)
 
@@ -576,7 +576,7 @@ func Test_clientMultipleAPIServersFailedHeartbeat(t *testing.T) {
 	K8sAPIServerFilePath = apiStateFile.Name()
 
 	servers := make([]*httptest.Server, 3)
-	for i := 0; i < len(servers); i++ {
+	for i := range servers {
 		servers[i] = httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			requests.Store(r.URL.Path, r)
 
@@ -715,7 +715,7 @@ func BenchmarkIsConnReadyMultipleAPIServers(b *testing.B) {
 	K8sAPIServerFilePath = apiStateFile.Name()
 
 	servers := make([]*httptest.Server, 3)
-	for i := 0; i < len(servers); i++ {
+	for i := range servers {
 		servers[i] = httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
 			switch r.URL.Path {
@@ -756,7 +756,7 @@ func BenchmarkIsConnReadyMultipleAPIServers(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		var wg sync.WaitGroup
 		wg.Add(num)
-		for j := 0; j < num; j++ {
+		for range num {
 			go func() {
 				require.NoError(b, isConnReady(clientset))
 				wg.Done()
