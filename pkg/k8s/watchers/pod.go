@@ -175,7 +175,7 @@ func (k *K8sPodWatcher) createAllPodsController(slimClient slimclientset.Interfa
 		&slim_corev1.Pod{},
 		0,
 		cache.ResourceEventHandlerFuncs{
-			AddFunc: func(obj interface{}) {
+			AddFunc: func(obj any) {
 				if pod := informer.CastInformerEvent[slim_corev1.Pod](obj); pod != nil {
 					err := k.addK8sPodV1(pod)
 					k.k8sEventReporter.K8sEventProcessed(metricPod, resources.MetricCreate, err == nil)
@@ -184,7 +184,7 @@ func (k *K8sPodWatcher) createAllPodsController(slimClient slimclientset.Interfa
 					k.k8sEventReporter.K8sEventReceived(podApiGroup, metricPod, resources.MetricCreate, false, false)
 				}
 			},
-			UpdateFunc: func(oldObj, newObj interface{}) {
+			UpdateFunc: func(oldObj, newObj any) {
 				if oldPod := informer.CastInformerEvent[slim_corev1.Pod](oldObj); oldPod != nil {
 					if newPod := informer.CastInformerEvent[slim_corev1.Pod](newObj); newPod != nil {
 						if oldPod.DeepEqual(newPod) {
@@ -199,7 +199,7 @@ func (k *K8sPodWatcher) createAllPodsController(slimClient slimclientset.Interfa
 					k.k8sEventReporter.K8sEventReceived(podApiGroup, metricPod, resources.MetricUpdate, false, false)
 				}
 			},
-			DeleteFunc: func(obj interface{}) {
+			DeleteFunc: func(obj any) {
 				if pod := informer.CastInformerEvent[slim_corev1.Pod](obj); pod != nil {
 					err := k.deleteK8sPodV1(pod)
 					k.k8sEventReporter.K8sEventProcessed(metricPod, resources.MetricDelete, err == nil)

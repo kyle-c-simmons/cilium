@@ -69,7 +69,7 @@ func (k *K8sCiliumLRPWatcher) ciliumLocalRedirectPolicyInit() {
 		&cilium_v2.CiliumLocalRedirectPolicy{},
 		0,
 		cache.ResourceEventHandlerFuncs{
-			AddFunc: func(obj interface{}) {
+			AddFunc: func(obj any) {
 				var valid, equal bool
 				defer func() {
 					k.k8sEventReporter.K8sEventReceived(apiGroup, metricCLRP, resources.MetricCreate, valid, equal)
@@ -80,10 +80,10 @@ func (k *K8sCiliumLRPWatcher) ciliumLocalRedirectPolicyInit() {
 					k.k8sEventReporter.K8sEventProcessed(metricCLRP, resources.MetricCreate, err == nil)
 				}
 			},
-			UpdateFunc: func(oldObj, newObj interface{}) {
+			UpdateFunc: func(oldObj, newObj any) {
 				log.Info("Local Redirect Policy updates are not handled")
 			},
-			DeleteFunc: func(obj interface{}) {
+			DeleteFunc: func(obj any) {
 				var valid, equal bool
 				defer func() {
 					k.k8sEventReporter.K8sEventReceived(apiGroup, metricCLRP, resources.MetricDelete, valid, equal)

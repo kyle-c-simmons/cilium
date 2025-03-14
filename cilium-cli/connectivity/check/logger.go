@@ -83,7 +83,7 @@ func (c *ConcurrentLogger) Print(test *Test, msg string) {
 }
 
 // Printf schedules message for the test to be printed.
-func (c *ConcurrentLogger) Printf(test *Test, format string, args ...interface{}) {
+func (c *ConcurrentLogger) Printf(test *Test, format string, args ...any) {
 	buf := &bytes.Buffer{}
 	if test.ctx.timestamp() {
 		mustFprint(buf, timestamp())
@@ -179,7 +179,7 @@ func mustFprint(writer io.Writer, msg string) {
 		panic(fmt.Errorf("failed to print log message: %w", err))
 	}
 }
-func mustFprintf(writer io.Writer, format string, args ...interface{}) {
+func mustFprintf(writer io.Writer, format string, args ...any) {
 	if _, err := fmt.Fprintf(writer, format, args...); err != nil {
 		panic(fmt.Errorf("failed to print log message: %w", err))
 	}

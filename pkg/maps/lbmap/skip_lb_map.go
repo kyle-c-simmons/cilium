@@ -111,7 +111,7 @@ func (m *skipLBMap) AllLB4() iter.Seq2[*SkipLB4Key, *SkipLB4Value] {
 	return func(yield func(*SkipLB4Key, *SkipLB4Value) bool) {
 		stop := false
 		m.bpfMap4.IterateWithCallback(&SkipLB4Key{}, &SkipLB4Value{},
-			func(k, v interface{}) {
+			func(k, v any) {
 				key := k.(*SkipLB4Key)
 				value := v.(*SkipLB4Value)
 				key.Port = byteorder.NetworkToHost16(key.Port)
@@ -126,7 +126,7 @@ func (m *skipLBMap) AllLB6() iter.Seq2[*SkipLB6Key, *SkipLB6Value] {
 	return func(yield func(*SkipLB6Key, *SkipLB6Value) bool) {
 		stop := false
 		m.bpfMap6.IterateWithCallback(&SkipLB6Key{}, &SkipLB6Value{},
-			func(k, v interface{}) {
+			func(k, v any) {
 				key := k.(*SkipLB6Key)
 				value := v.(*SkipLB6Value)
 				key.Port = byteorder.NetworkToHost16(key.Port)
@@ -182,7 +182,7 @@ func (m *skipLBMap) DeleteLB4ByAddrPort(ip net.IP, port uint16) {
 		}
 	}
 	if err := m.bpfMap4.IterateWithCallback(&SkipLB4Key{}, &SkipLB4Value{},
-		func(k, v interface{}) {
+		func(k, v any) {
 			key := k.(*SkipLB4Key)
 			value := v.(*SkipLB4Value)
 			deleteEntry(key, value)
@@ -220,7 +220,7 @@ func (m *skipLBMap) DeleteLB4ByNetnsCookie(cookie uint64) {
 		}
 	}
 	if err := m.bpfMap4.IterateWithCallback(&SkipLB4Key{}, &SkipLB4Value{},
-		func(k, v interface{}) {
+		func(k, v any) {
 			key := k.(*SkipLB4Key)
 			value := v.(*SkipLB4Value)
 			deleteEntry(key, value)
@@ -257,7 +257,7 @@ func (m *skipLBMap) DeleteLB6ByAddrPort(ip net.IP, port uint16) {
 		}
 	}
 	if err := m.bpfMap6.IterateWithCallback(&SkipLB6Key{}, &SkipLB6Value{},
-		func(k, v interface{}) {
+		func(k, v any) {
 			key := k.(*SkipLB6Key)
 			value := v.(*SkipLB6Value)
 			deleteEntry(key, value)
@@ -295,7 +295,7 @@ func (m *skipLBMap) DeleteLB6ByNetnsCookie(cookie uint64) {
 		}
 	}
 	if err := m.bpfMap6.IterateWithCallback(&SkipLB6Key{}, &SkipLB6Value{},
-		func(k, v interface{}) {
+		func(k, v any) {
 			key := k.(*SkipLB6Key)
 			value := v.(*SkipLB6Value)
 			deleteEntry(key, value)
