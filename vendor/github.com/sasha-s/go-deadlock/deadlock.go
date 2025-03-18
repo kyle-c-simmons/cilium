@@ -286,8 +286,9 @@ var lo = newLockOrder()
 
 func newLockOrder() *lockOrder {
 	return &lockOrder{
-		cur:   map[interface{}]stackGID{},
-		order: map[beforeAfter]ss{},
+		pToStackGID: map[interface{}]stackGID{},
+		cur:         map[interface{}]stackGID{},
+		order:       map[beforeAfter]ss{},
 	}
 }
 
