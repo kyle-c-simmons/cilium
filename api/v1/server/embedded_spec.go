@@ -3741,14 +3741,6 @@ func init() {
                 }
               }
             },
-            "gracefulTermination": {
-              "type": "object",
-              "properties": {
-                "enabled": {
-                  "type": "boolean"
-                }
-              }
-            },
             "hostPort": {
               "type": "object",
               "properties": {
@@ -9541,14 +9533,6 @@ func init() {
                 }
               }
             },
-            "gracefulTermination": {
-              "type": "object",
-              "properties": {
-                "enabled": {
-                  "type": "boolean"
-                }
-              }
-            },
             "hostPort": {
               "type": "object",
               "properties": {
@@ -9726,14 +9710,6 @@ func init() {
             }
           }
         },
-        "gracefulTermination": {
-          "type": "object",
-          "properties": {
-            "enabled": {
-              "type": "boolean"
-            }
-          }
-        },
         "hostPort": {
           "type": "object",
           "properties": {
@@ -9865,14 +9841,6 @@ func init() {
       }
     },
     "KubeProxyReplacementFeaturesExternalIPs": {
-      "type": "object",
-      "properties": {
-        "enabled": {
-          "type": "boolean"
-        }
-      }
-    },
-    "KubeProxyReplacementFeaturesGracefulTermination": {
       "type": "object",
       "properties": {
         "enabled": {

@@ -296,9 +296,6 @@ type KubeProxyReplacementFeatures struct {
 	// external i ps
 	ExternalIPs *KubeProxyReplacementFeaturesExternalIPs `json:"externalIPs,omitempty"`
 
-	// graceful termination
-	GracefulTermination *KubeProxyReplacementFeaturesGracefulTermination `json:"gracefulTermination,omitempty"`
-
 	// host port
 	HostPort *KubeProxyReplacementFeaturesHostPort `json:"hostPort,omitempty"`
 
@@ -326,10 +323,6 @@ func (m *KubeProxyReplacementFeatures) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateExternalIPs(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateGracefulTermination(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -378,25 +371,6 @@ func (m *KubeProxyReplacementFeatures) validateExternalIPs(formats strfmt.Regist
 				return ve.ValidateName("features" + "." + "externalIPs")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("features" + "." + "externalIPs")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (m *KubeProxyReplacementFeatures) validateGracefulTermination(formats strfmt.Registry) error {
-	if swag.IsZero(m.GracefulTermination) { // not required
-		return nil
-	}
-
-	if m.GracefulTermination != nil {
-		if err := m.GracefulTermination.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("features" + "." + "gracefulTermination")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("features" + "." + "gracefulTermination")
 			}
 			return err
 		}
@@ -546,10 +520,6 @@ func (m *KubeProxyReplacementFeatures) ContextValidate(ctx context.Context, form
 		res = append(res, err)
 	}
 
-	if err := m.contextValidateGracefulTermination(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.contextValidateHostPort(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -597,27 +567,6 @@ func (m *KubeProxyReplacementFeatures) contextValidateExternalIPs(ctx context.Co
 				return ve.ValidateName("features" + "." + "externalIPs")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("features" + "." + "externalIPs")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (m *KubeProxyReplacementFeatures) contextValidateGracefulTermination(ctx context.Context, formats strfmt.Registry) error {
-
-	if m.GracefulTermination != nil {
-
-		if swag.IsZero(m.GracefulTermination) { // not required
-			return nil
-		}
-
-		if err := m.GracefulTermination.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("features" + "." + "gracefulTermination")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("features" + "." + "gracefulTermination")
 			}
 			return err
 		}
@@ -821,43 +770,6 @@ func (m *KubeProxyReplacementFeaturesExternalIPs) MarshalBinary() ([]byte, error
 // UnmarshalBinary interface implementation
 func (m *KubeProxyReplacementFeaturesExternalIPs) UnmarshalBinary(b []byte) error {
 	var res KubeProxyReplacementFeaturesExternalIPs
-	if err := swag.ReadJSON(b, &res); err != nil {
-		return err
-	}
-	*m = res
-	return nil
-}
-
-// KubeProxyReplacementFeaturesGracefulTermination kube proxy replacement features graceful termination
-//
-// swagger:model KubeProxyReplacementFeaturesGracefulTermination
-type KubeProxyReplacementFeaturesGracefulTermination struct {
-
-	// enabled
-	Enabled bool `json:"enabled,omitempty"`
-}
-
-// Validate validates this kube proxy replacement features graceful termination
-func (m *KubeProxyReplacementFeaturesGracefulTermination) Validate(formats strfmt.Registry) error {
-	return nil
-}
-
-// ContextValidate validates this kube proxy replacement features graceful termination based on context it is used
-func (m *KubeProxyReplacementFeaturesGracefulTermination) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
-	return nil
-}
-
-// MarshalBinary interface implementation
-func (m *KubeProxyReplacementFeaturesGracefulTermination) MarshalBinary() ([]byte, error) {
-	if m == nil {
-		return nil, nil
-	}
-	return swag.WriteJSON(m)
-}
-
-// UnmarshalBinary interface implementation
-func (m *KubeProxyReplacementFeaturesGracefulTermination) UnmarshalBinary(b []byte) error {
-	var res KubeProxyReplacementFeaturesGracefulTermination
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

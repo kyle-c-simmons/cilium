@@ -2350,11 +2350,6 @@ definitions:
             properties:
               enabled:
                 type: boolean
-          gracefulTermination:
-            type: object
-            properties:
-              enabled:
-                type: boolean
           nat46X64:
             description: |-
 

@@ -457,11 +457,6 @@ func (in *KubeProxyReplacementFeatures) DeepCopyInto(out *KubeProxyReplacementFe
 		*out = new(KubeProxyReplacementFeaturesExternalIPs)
 		**out = **in
 	}
-	if in.GracefulTermination != nil {
-		in, out := &in.GracefulTermination, &out.GracefulTermination
-		*out = new(KubeProxyReplacementFeaturesGracefulTermination)
-		**out = **in
-	}
 	if in.HostPort != nil {
 		in, out := &in.HostPort, &out.HostPort
 		*out = new(KubeProxyReplacementFeaturesHostPort)
