@@ -42,6 +42,8 @@ import (
 
 var (
 	log = logging.DefaultLogger.WithField(logfields.LogSubsys, "egressgateway")
+
+	// IPv4 special values
 	// GatewayNotFoundIPv4 is a special IP value used as gatewayIP in the BPF policy
 	// map to indicate no gateway was found for the given policy
 	GatewayNotFoundIPv4 = netip.IPv4Unspecified()
@@ -51,6 +53,14 @@ var (
 	// EgressIPNotFoundIPv4 is a special IP value used as egressIP in the BPF policy map
 	// to indicate no egressIP was found for the given policy
 	EgressIPNotFoundIPv4 = netip.IPv4Unspecified()
+
+	// IPv6 special values
+	// ExcludedCIDRIPv6 is a special IP value used as gatewayIP in the BPF policy map
+	// to indicate the entry is for an excluded CIDR and should skip egress gateway
+	ExcludedCIDRIPv6 = netip.MustParseAddr("::1")
+	// EgressIPNotFoundIPv6 is a special IP value used as egressIP in the BPF policy map
+	// to indicate no egressIP was found for the given policy
+	EgressIPNotFoundIPv6 = netip.IPv6Unspecified()
 )
 
 // Cell provides a [Manager] for consumption with hive.
@@ -124,7 +134,8 @@ type Manager struct {
 	identityAllocator identityCache.IdentityAllocator
 
 	// policyMap communicates the active policies to the datapath.
-	policyMap *egressmap.PolicyMap4
+	policyMap4 *egressmap.PolicyMap4
+	policyMap6 *egressmap.PolicyMap6
 
 	// reconciliationTriggerInterval is the amount of time between triggers
 	// of reconciliations are invoked
@@ -153,7 +164,8 @@ type Params struct {
 	Config            Config
 	DaemonConfig      *option.DaemonConfig
 	IdentityAllocator identityCache.IdentityAllocator
-	PolicyMap         *egressmap.PolicyMap4
+	PolicyMap4        *egressmap.PolicyMap4
+	PolicyMap6        *egressmap.PolicyMap6
 	Policies          resource.Resource[*Policy]
 	Nodes             resource.Resource[*cilium_api_v2.CiliumNode]
 	Endpoints         resource.Resource[*k8sTypes.CiliumEndpoint]
@@ -207,7 +219,8 @@ func newEgressGatewayManager(p Params) (*Manager, error) {
 		epDataStore:                   make(map[endpointID]*endpointMetadata),
 		identityAllocator:             p.IdentityAllocator,
 		reconciliationTriggerInterval: p.Config.EgressGatewayReconciliationTriggerInterval,
-		policyMap:                     p.PolicyMap,
+		policyMap4:                    p.PolicyMap4,
+		policyMap6:                    p.PolicyMap6,
 		policies:                      p.Policies,
 		ciliumNodes:                   p.Nodes,
 		endpoints:                     p.Endpoints,
@@ -561,6 +574,7 @@ func (manager *Manager) relaxRPFilter() error {
 		ifaceName := pc.gatewayConfig.ifaceName
 		if _, ok := ifSet[ifaceName]; !ok {
 			ifSet[ifaceName] = struct{}{}
+			// Does this also need to happen for ipv6?
 			sysSettings = append(sysSettings, tables.Sysctl{
 				Name:      []string{"net", "ipv4", "conf", ifaceName, "rp_filter"},
 				Val:       "2",
@@ -577,46 +591,94 @@ func (manager *Manager) relaxRPFilter() error {
 }
 
 func (manager *Manager) updateEgressRules() {
-	egressPolicies := map[egressmap.EgressPolicyKey4]egressmap.EgressPolicyVal4{}
-	manager.policyMap.IterateWithCallback(
-		func(key *egressmap.EgressPolicyKey4, val *egressmap.EgressPolicyVal4) {
-			egressPolicies[*key] = *val
-		})
+	egressPolicies4 := map[egressmap.EgressPolicyKey4]egressmap.EgressPolicyVal4{}
+	if manager.policyMap4 != nil {
+		manager.policyMap4.IterateWithCallback(
+			func(key *egressmap.EgressPolicyKey4, val *egressmap.EgressPolicyVal4) {
+				egressPolicies4[*key] = *val
+			})
+	}
+
+	egressPolicies6 := map[egressmap.EgressPolicyKey6]egressmap.EgressPolicyVal6{}
+	if manager.policyMap6 != nil {
+		manager.policyMap6.IterateWithCallback(
+			func(key *egressmap.EgressPolicyKey6, val *egressmap.EgressPolicyVal6) {
+				egressPolicies6[*key] = *val
+			})
+	}
 
 	// Start with the assumption that all the entries currently present in the
-	// BPF map are stale. Then as we walk the entries below and discover which
-	// entries are actually still needed, shrink this set down.
-	stale := sets.KeySet(egressPolicies)
+	// BPF maps are stale. Then as we walk the entries below and discover which
+	// entries are actually still needed, shrink these sets down.
+	stale4 := sets.KeySet(egressPolicies4)
+	stale6 := sets.KeySet(egressPolicies6)
 
 	addEgressRule := func(endpointIP netip.Addr, dstCIDR netip.Prefix, excludedCIDR bool, gwc *gatewayConfig) {
-		policyKey := egressmap.NewEgressPolicyKey4(endpointIP, dstCIDR)
-
-		// This key needs to be present in the BPF map, hence remove it from
-		// the list of stale ones.
-		stale.Delete(policyKey)
-
-		policyVal, policyPresent := egressPolicies[policyKey]
-
-		gatewayIP := gwc.gatewayIP
-		if excludedCIDR {
-			gatewayIP = ExcludedCIDRIPv4
-		}
-
-		if policyPresent && policyVal.Match(gwc.egressIP, gatewayIP) {
-			return
-		}
-
 		logger := log.WithFields(logrus.Fields{
 			logfields.SourceIP:        endpointIP,
 			logfields.DestinationCIDR: dstCIDR.String(),
-			logfields.EgressIP:        gwc.egressIP,
-			logfields.GatewayIP:       gatewayIP,
+			logfields.EgressIP:        gwc.egressIP4,
+			logfields.GatewayIP:       gwc.gatewayIP,
 		})
 
-		if err := manager.policyMap.Update(endpointIP, dstCIDR, gwc.egressIP, gatewayIP); err != nil {
-			logger.WithError(err).Error("Error applying egress gateway policy")
-		} else {
-			logger.Debug("Egress gateway policy applied")
+		if endpointIP.Is4() {
+			if manager.policyMap4 == nil {
+				return
+			}
+
+			if !dstCIDR.Addr().Is4() {
+				return
+			}
+
+			policyKey := egressmap.NewEgressPolicyKey4(endpointIP, dstCIDR)
+			stale4.Delete(policyKey)
+
+			policyVal, policyPresent := egressPolicies4[policyKey]
+
+			gatewayIP := gwc.gatewayIP
+			if excludedCIDR {
+				gatewayIP = ExcludedCIDRIPv4
+			}
+
+			if policyPresent && policyVal.Match(gwc.egressIP4, gatewayIP) {
+				return
+			}
+
+			if err := manager.policyMap4.Update(endpointIP, dstCIDR, gwc.egressIP4, gatewayIP); err != nil {
+				logger.WithError(err).Error("Error applying IPv4 egress gateway policy")
+			} else {
+				logger.Debug("IPv4 egress gateway policy applied")
+			}
+		}
+
+		if endpointIP.Is6() {
+			if manager.policyMap6 == nil {
+				return
+			}
+
+			if !dstCIDR.Addr().Is6() {
+				return
+			}
+
+			policyKey := egressmap.NewEgressPolicyKey6(endpointIP, dstCIDR)
+			stale6.Delete(policyKey)
+
+			policyVal, policyPresent := egressPolicies6[policyKey]
+
+			gatewayIP := gwc.gatewayIP
+			if excludedCIDR {
+				gatewayIP = ExcludedCIDRIPv6
+			}
+
+			if policyPresent && policyVal.Match(gwc.egressIP4, gatewayIP) {
+				return
+			}
+
+			if err := manager.policyMap6.Update(endpointIP, dstCIDR, gwc.egressIP4, gatewayIP); err != nil {
+				logger.WithError(err).Error("Error applying IPv6 egress gateway policy")
+			} else {
+				logger.Debug("IPv6 egress gateway policy applied")
+			}
 		}
 	}
 
@@ -625,16 +687,33 @@ func (manager *Manager) updateEgressRules() {
 	}
 
 	// Remove all the entries marked as stale.
-	for policyKey := range stale {
-		logger := log.WithFields(logrus.Fields{
-			logfields.SourceIP:        policyKey.GetSourceIP(),
-			logfields.DestinationCIDR: policyKey.GetDestCIDR().String(),
-		})
+	if manager.policyMap4 != nil {
+		for policyKey := range stale4 {
+			logger := log.WithFields(logrus.Fields{
+				logfields.SourceIP:        policyKey.GetSourceIP(),
+				logfields.DestinationCIDR: policyKey.GetDestCIDR().String(),
+			})
 
-		if err := manager.policyMap.Delete(policyKey.GetSourceIP(), policyKey.GetDestCIDR()); err != nil {
-			logger.WithError(err).Error("Error removing egress gateway policy")
-		} else {
-			logger.Debug("Egress gateway policy removed")
+			if err := manager.policyMap4.Delete(policyKey.GetSourceIP(), policyKey.GetDestCIDR()); err != nil {
+				logger.WithError(err).Error("Error removing IPv4 egress gateway policy")
+			} else {
+				logger.Debug("IPv4 egress gateway policy removed")
+			}
+		}
+	}
+
+	if manager.policyMap6 != nil {
+		for policyKey := range stale6 {
+			logger := log.WithFields(logrus.Fields{
+				logfields.SourceIP:        policyKey.GetSourceIP(),
+				logfields.DestinationCIDR: policyKey.GetDestCIDR().String(),
+			})
+
+			if err := manager.policyMap6.Delete(policyKey.GetSourceIP(), policyKey.GetDestCIDR()); err != nil {
+				logger.WithError(err).Error("Error removing IPv6 egress gateway policy")
+			} else {
+				logger.Debug("IPv6 egress gateway policy removed")
+			}
 		}
 	}
 }
